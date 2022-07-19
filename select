@@ -1,0 +1,68 @@
+select g.name, count(id_genre) from artist_genre ag 
+join genre g on ag.id_genre = g.id 
+group by g.name
+;
+
+select count(t.len_track) from track t 
+join albums a  on t.albums_id  = a.id  
+where a.year_create between 2018 and 2021
+;
+
+select a."name"  , avg(t.len_track)  from albums a 
+join track t on a.id = t.albums_id 
+group by a."name" 
+;
+
+select a3."name" from artist a3 
+where not a3.id  in 
+	(
+	select a.id  from artist a 
+	join artist_albums aa on a.id = aa.id_artist 
+	join albums a2 on aa.id_albums = a2.id 
+	where a2.year_create = 2020
+	)
+;
+
+select m."name" from mix m
+join track_mix tm on m.id = tm.id_mix 
+join track t on tm.id_track  = t.id 
+join artist_albums aa on t.albums_id  = aa.id_artist  
+join artist a on aa.id_artist  = a.id 
+where a."name" = 'Каста'
+group by m."name"
+;
+
+select  a."name"  from albums a 
+join artist_albums aa on a.id = aa.id_albums 
+join artist a2 on aa.id_artist = a2.id
+join artist_genre ag on a2.id = ag.id_artist 
+group by a."name", a2.id
+having (COUNT(*) > 1)
+;
+
+select t."name" from track t 
+left join track_mix tm on t.id = tm.id_track 
+where  tm.id_track is null
+; 
+
+select  distinct  a."name"  from track t 
+join artist_albums aa on t.albums_id = aa.id_albums 
+join artist a on aa.id_artist = a.id 
+where t.len_track = 
+	(
+	select min (t.len_track)  from track t
+	)
+;
+
+select   a."name" from track t 
+join albums a on t.albums_id = a.id 
+group by a."name"
+having (count(t.albums_id) ) = 
+	(
+	select   count( t.albums_id)   from track t
+	join albums a on t.albums_id = a.id 
+	group by t.albums_id
+	order by count( t.albums_id)
+	limit 1
+	)
+;
